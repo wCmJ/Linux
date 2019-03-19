@@ -1,0 +1,29 @@
+-ESc
+cpp/gcc/as/ld
+.iso
+gcc:
+-v/--version 
+-I  path of header files, relative path. (before 12.04 -I./../../)  
+-c  generate .o file
+-o  specify name of the target file
+-g  gdb debug parameter
+-D  specify macro when preprocessing, only debug mode
+-Wall add warning information
+-On optimize code n:1-3 3 is the most level
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
