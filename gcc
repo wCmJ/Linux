@@ -11,6 +11,15 @@ gcc:
 -Wall add warning information
 -On optimize code n:1-3 3 is the most level
 
+-L  library file location
+-l  library name
+
+
+gcc -c *.c 
+ar rcs libtest.a *.o
+
+gcc -c *.c -fpic
+gcc -shared *.o -o libtest.so
 
 
 
