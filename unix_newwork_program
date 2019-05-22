@@ -1,0 +1,9 @@
+socket address structure:
+    a text representation of an address and the binary value that goes into a socket address structure
+    inet_addr/inet_ntoa
+    inet_pton/inet_ntop(IPv4 and IPv6):
+        inet_pton: convert IPv4 and IPv6 addresses from text to binary form
+            int inet_pton(int af, const char* src, void *dst);
+        inet_ntop: convert IPv4 and IPv6 addresses from binary to text form
+            const char* inet_ntop(int af, const void *src, char *dst, socklen_t size);
+    
