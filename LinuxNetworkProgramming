@@ -1,0 +1,112 @@
+1. fork(), execl(), wait(), exit()
+    //command is input parameter
+    int pid = fork();
+    if(pid == 0)//child
+    {
+        execl("/bin/ls","ls","-c",command,NULL);
+        perror("execl failed");
+        exit(1);
+    }
+    else if(pid > 0)//parent
+    {
+        //todo
+        wait(NULL);
+        printf("completed\n");
+        exit(0);
+    }
+    else//-1 error
+    {
+        
+    }
+    shell:
+        fork(), exec(), wait()
+    shell backend:
+        fork(), exec()
+    如何让程序以守护进程运行：
+        1.在命令后加&
+        2.重定向输出 (> /dev/null 2>&1 &) 
+    父、子进程除了fork返回值，其它值均相同，且各自独立，占用不同的内存地址空间，互相之间不影响。
+    父进程中打开的文件，在子进程中也被打开，当子进程中改变该fd时，父进程中也被改变。文件指针被两个进程共用。
+    lseek(fd, offset, origin);
+    SEEK_SET 0//begin
+    SEEK_CUR 1//current
+    SEEK_END 2//end
+    lseek(fd, 0, SEEK_SET);//将读写位置移到文件开头
+    lseek(fd, 0, SEEK_END);//将读写位置移到文件尾部
+    lseek(fd, 0, SEEK_CUR);//取得目前文件位置
+    void failure(const char *s)
+    {
+        perror(s);
+        //exit(1);
+    }
+    void printpos(char *string, int fildes)
+    {
+        long pos;
+        if((pos = lseek(fildes, 0L, 1)) < 0L)
+        {
+            failure("lseek failed");
+        }
+        printf("%s: %ld \n", string, pos);
+    }
+    int main()
+    {
+        int fd;
+        int pid;
+        char buf[10];
+        
+        if((fd = open("data",O_RDONLY) < 0)
+        {
+            failure("open failed");
+        }
+        read(fd, buf, 10);
+        printpos("Before fork",fd);
+        
+        if((pid = fork()) < 0)
+        {
+            failure("fork failed");
+        }
+        else if(!pid)
+        {
+            printpos("Child before read", fd);
+            read(fd, buf, 10);
+            printpos("child after read", fd);
+        }
+        else
+        {
+            wait(NULL);
+            printpos("parent after wait", fd);
+        }
+        
+        return 0;
+    }
+    一个程序调用exec执行新程序时，已被打开的文件，仍保持打开。
+    #include<fcntl.h>
+    int fd;
+    fd = open("file", O_RDONLY);
+    fcntl(fd, F_SETFD, 1);//执行关闭
+    res = fcntl(fd, F_SETFD, 0);//执行关闭位被设置，res = 1; 否则res = 0
+    
+    exit(0)//#include<stdlib.h>
+    void exit(int status);
+    除了终止进程运行外，关闭所有已打开文件，清楚缓冲区。
+    如果父进程执行wait()而处于睡眠状态，子进程exit()会唤醒父进程。
+    
+    wait()//#include<sys/wait.h>
+    pid_t wait(int *status);
+    如果有多个子进程在执行，父进程中的wait()在第一个子进程结束时返回，恢复父进程执行。
+    wait()的返回值通常是结束的那个子进程的进程标识符。
+    如果返回-1，表示子进程结束，这时errno中含有ECHILD。
+    若传入一个有效的指针，该指针指向子进程退出时的状态信息。该信息就是子进程通过exit传送出来的出口信息。
+    exit(0) -> wait(p)
+    |low 8-bit|high 8-bit|
+    通过exit()返回的high 8-bit为0
+    
+    子进程终止时，父进程不在wait()
+        终止进程处于过渡状态(zombie僵尸进程)，不使用任何内核资源，占用内核中的进程处理表一项(进程号)。
+    子进程尚未终止时，父进程终止了
+        父进程结束，把他的子进程交归系统的初始化进程(init)。
+    
+    
+    
+    
+    
