@@ -64,12 +64,52 @@ sed:
     nl /etc/passwd | sed -e '3,$d' -e 's/bash/blueshell/'
        
 grep:
-    处理行
+    global search regular expression and print out the line
+    -a: 将binary文件以text文件的方式搜寻数据
+    -c: 计数
+    -i: 忽略大小写搜索
+    -n: 输出行号
+    -v: 反向选择
+    --color=auto: 
+    dmesg | grep 'eth' -n -A2 -B3 --color=auto
+    grep 'string' * 在当前目录搜索带string行的文件
+    grep -r 'string' 在当前目录及其子目录下搜索带string行的文件
+    grep -l -r 'string' 在当前目录及其子目录下搜索string行的文件，但是不显示匹配的行，只显示匹配的文件
+    grep -n 't[ae]st' filename
+    grep -n '[^g]oo' filename
+    grep -n '[^a-z]oo' filename
+    grep -n '[0-9]' filename
+    grep -n '^the' filename
+    grep -n '^[^0-9a-zA-Z]' filename
+    grep -n '\.$' filename
+    grep -n '^$' filename
+    grep -n '^  *$' filename
+    
+    
+    
     
     
 awk:
     awk 'condition{command}'
-    
+    awk工作流程： 读入有'\n'换行符分割的一条记录，然后将记录按制定的域分隔符划分域，填充域，$0表示所有域，$1表示第一个域，默认分隔符是空白键或tab键。
+    内置变量：
+        ARGC: 命令行参数个数
+        ARGV: 命令行参数排列
+        ENVIRON: 系统环境变量
+        FILENAME: awk浏览的文件名
+        FNR: 浏览文件的记录数
+        FS: 输入域分隔符，等价于-F
+        NF: 域的个数
+        NR: 已读的记录数
+        OFS: 输出域分隔符
+        RS: 控制记录分隔符
+        print: 参数可以是变量、数值和字符串。字符串必须用""，参数用逗号分隔。
+        
+    cat /etc/passwd | awk -F ":" '{print $1}'
+    awk -F: '/root/' /etc/passwd
+    awk -F: '/root/{print $7}' /etc/passwd
+    ls -l | awk 'BEGIN{size = 0;}{size = size+$5;}END{print "size is:" size}'
+    awk -F ":" 'BEGIN{count=0;} {name[count]=$5;count++;} END{for(i=0;i<NR;i++)print i, name[i]}' /etc/passwd
     
     
     
