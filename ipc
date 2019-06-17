@@ -1,0 +1,60 @@
+signal:
+    kernel  ->  process
+    proces  ->  process
+    中断一个后台程序的运行，kill -s SIGTERM
+    信号可以中断一个进程，而不管它在做什么
+    信号不能携带数据，不能作为一个通用的进程通信机制。
+    CTRL + C: SIGINT
+    CTRL + \: SIGQUIT
+    SIGKILL: 不能被忽略和捕捉，能保证终止一个进程。
+    SIGUSR1/SIGUSR2: 非内核发送，用于用户所希望的场景。
+    SIGCHLD:进程调用exit()时，向父进程发送SIGCHLD信号，若父进程在wait()状态，则唤醒；若父进程不在wait()状态，该信号不起作用，子进程进入过渡状态。
+
+ulimit -c: check core size, if size is 0, no core file will be generated.
+ulimit -c 1024
+value:  SIGINT, SIGKILL, SIGILL, SIGALRM, SIGQUIT...
+func:   void dosomething(int);
+#include<signal.h>
+signal(value, SIG_IGN/SIG_DFL/func);
+
+//
+void mycatch(int v);
+int main()
+{
+    void (*old)(int);
+    //signal(SIGINT, mycatch);
+    old = signal(SIGINT, SIG_IGN);
+    sleep(10);
+    signal(SIGINT, old);
+    //do something
+    return 0;
+
+}
+
+//system call that can be interrupted
+wait()/pause()/read()/write()/open()...
+同种类型信号不会中断处理函数，且不能累积，多个会被处理成一个。不同类型信号会中断当前处理。
+
+#include<signal.h>
+int kill(pid_t pid, int sig);
+普通用户的进程只能向与其有相同用户标识符的进程发送信号，一个用户的进程不能向另一个用户的进程发送信号。
+
+pid == 0: 当前进程所在进程组的所有进程。
+pid == -1: 按进程标识符从高到低的顺序发送给所有的进程。
+pid < -1: 发送给进程组标识符为pid绝对值的所有进程。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
