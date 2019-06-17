@@ -40,9 +40,29 @@ sed:
     处理列
     -i: 写入文件
     -n: 仅显示选定的行
-    -e: 允许多个指令
-    [p/d/i/a/s]
+    -e: 允许多个指令,直接在命令列模式上进行sed的动作编辑
+    [a/c/d/i/p/s]
+    a: 新增，字符出现在下一行
+    c: 取代，可以取代n1,n2之间的行
+    d: 删除，
+    i: 插入，字符出现在上一行
+    p: 打印
+    s: 替换
     
+    nl /etc/passwd | sed '2,5d'
+    nl /etc/passwd | sed '2d'
+    nl /etc/passwd | sed '3,$d'
+    nl /etc/passwd | sed '2a drink tea'
+    nl /etc/passwd | sed '2i drink tea'
+    nl /etc/passwd | sed '2,5c No 2-5 number'
+    nl /etc/passwd | sed '5,7p'
+    nl /etc/passwd | sed '/root/p' 搜索有root关键字的行
+    nl /etc/passwd | sed -n '/root/p' 只输出包含root的行
+    nl /etc/passwd | sed '/root/d' 删除包含root的行，其他行输出
+    nl /etc/passwd | sed -n '/root/{s/bash/blueshell/;p}'
+    nl /etc/passwd | sed -n '/bash/{s/bash/blueshell/;p;q}'
+    nl /etc/passwd | sed -e '3,$d' -e 's/bash/blueshell/'
+       
 grep:
     处理行
     
