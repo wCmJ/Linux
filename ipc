@@ -1,3 +1,15 @@
+
+open是UNIX的系统调用，返回fd。
+    依赖于操作系统，通过系统功能对文件进行读写，系统级的输入输出。
+fopen是C标准函数，返回文件指针，具有很好的移植性。
+    借助文件结构体指针对文件进行管理。
+    缓冲文件系统，在内存开辟一个缓冲区，为每一个文件使用。
+    读数据时，从磁盘读入到内存缓冲区，内存缓冲区满后，再一次读出。
+    写数据时，写入到内存缓冲区，满后，再写入文件。
+    内存缓冲区越大，操作外存的次数越小，执行速度快，效率高。
+    fopen, fwrite, fread, fclose, fgetc, fgets, fputc, fputs, freopen, fseek, ftell, rewind.
+顺序访问fopen效率高，随机访问相反。    
+
 signal:
     kernel  ->  process
     proces  ->  process
@@ -71,6 +83,128 @@ pid < -1: 发送给进程组标识符为pid绝对值的所有进程。
     有名管道以一种特殊的设备文件的形式存在于文件系统中，能用于通信，还能被多个进程共享，可以长期存在。
     mknod mysampleFIFO p
     mkfifo -m 0666 mysampleFIFO
+    
+    c example---server:
+    FILE *fp;
+    char readbuf[80];
+    umask(0);
+    mknod("fifo", S_IFIFO|0666, 0);
+    fp = fopen("fifo", "r");
+    fgets(readbuf, 80, fp);//默认是阻塞，会等待直到管道中有数据
+
+    c example---client:
+    char buf[80] = "some data";
+    FILE *fp;   
+    fp = fopen("fifo", "w");
+    fputs(buf, fp);
+    -------------------------------------------------------------------------------------------------
+    管道必须有读写两个进程端，如果向一个没有读入端进程的有名管道写入数据，产生SIGPIPE信号。
+    管道读写操作数据有上限，当一次写操作传输的数据量超过上限时，有可能被别的写操作打断。
+    
+消息队列 | 信号量 | 共享内存
+    在内核中有一个对象存在，称之为IPC对象。
+    每个对象在系统内核中有一个唯一标识符。唯一性只在每一类的IPC对象内成立，一个消息队列和一个信号量的标识符可能是相同的。
+    IPC通过关键字来访问，关键字必须唯一。
+    如何构造关键字使之不与现有的冲突，并保证server和client使用相同关键字，是建立IPC对象的首要问题。
+    
+    key_t ftok(char *pathname, char proj);
+    key_t mykey;
+    mykey = ftok(".", 'a');
+
+    ipcs: 显示内核中的IPC对象
+    ipcs: show all objects.
+    ipcs -s: semaphore
+    ipcs -q: message queue
+    ipcs -m: shared memory
+    
+    ipcrm: 强制系统删除已存在的IPC对象。
+    ipcrm <msg|sem|shm> <IPC ID>
+    
+消息队列：
+    ipc_perm:保存每个IPC对象的权限信息
+    struct ipc_perm
+    {
+        key_t key;
+        ushort uid; /* owner euid and egid */
+        ushort gid;
+        ushort cuid; /* creator euid and egid */
+        ushort cgid;
+        ushort mode; /* access modes see mode flags below */
+        ushort seq; /* slot usage sequence number */
+    };
+    
+    msgbuf: 消息的结构
+    struct msgbuf {
+        long mtype; /* type of message */
+        char mtext[1]; /* message text */
+    };
+    example:
+        struct my_msgbuf {
+            long mtype; /* Message type */
+            long request_id; /* Request identifier */
+            struct client info; /* Client information structure */
+        };
+    msg: 消息链表结构
+    struct msg {
+        struct msg *msg_next; /* next message on queue */
+        long msg_type;
+        char *msg_spot; /* message text address */
+        time_t msg_stime; /* msgsnd time */
+        short msg_ts; /* message text size */
+    };
+    msgqid_ds:内核用来保存消息队列对象有关数据
+    struct msqid_ds {
+        struct ipc_perm msg_perm;
+        struct msg *msg_first; /* first message on queue */
+        struct msg *msg_last; /* last message in queue */
+        __kernel_time_t msg_stime; /* last msgsnd time */
+        __kernel_time_t msg_rtime; /* last msgrcv time */
+        __kernel_time_t msg_ctime; /* last change time */
+        struct wait_queue *wwait;
+        struct wait_queue *rwait;
+        unsigned short msg_cbytes; /* current number of bytes on queue */
+        unsigned short msg_qnum; /* number of messages in queue */
+        unsigned short msg_qbytes; /* max number of bytes on queue */
+        __kernel_ipc_pid_t msg_lspid; /* pid of last msgsnd */
+        __kernel_ipc_pid_t msg_lrpid; /* last receive pid */
+    };
+    
+    int msgget(key_t, msgflg);
+    msgflg(IPC_CREAT|IPC_EXCL):
+    IPC_CREAT: 如果对象不存在，创建之，否则进行打开操作
+    IPC_EXCL: 和IPC_CREAT一起使用，如果不存在，创建之，否则产生一个错误并返回。
+    
+    int msgsnd(int msqid, struct msgbuf *msgp, int msgsz, int msgflg);
+    msqid:由msgget()得到
+    msgflg:控制函数行为的标志：
+        0：忽略标志位
+        IPC_NOWAIT:如果消息队列已满，消息不被写入队列，控制权返回调用函数的线程。如果不指定这个参数，线程将被阻塞直到消息可以被写入。
+    
+    int msgrv(int msqid, struct msgbuf *msgp, int msgsz, long mtype, int msgflg);
+    如果mtype为0，函数将不检查类型，自动返回队列中最旧的消息。
+    IPC_NOWAIT: 队列为空，返回ENOMSG，控制权返回调用函数的进程；不指定这个参数，阻塞直到可以从队列中得到符合条件的消息。
+        如果等待时队列被删除，EIDRM被返回；如果阻塞时收到中断信号，EINTR被返回。
+    MSG_NOERROR: 如果函数取得的消息长度大于msgsz，只返回msgsz长度的信息，剩下的被丢弃，如果不指定这个参数，E2BIG将被返回，而消息留在队列中不被取出。
+    消息从队列中取出后，相应的消息就从队列中删除了。
+信号量：
+
+
+共享内存：
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
