@@ -111,5 +111,29 @@ awk:
     ls -l | awk 'BEGIN{size = 0;}{size = size+$5;}END{print "size is:" size}'
     awk -F ":" 'BEGIN{count=0;} {name[count]=$5;count++;} END{for(i=0;i<NR;i++)print i, name[i]}' /etc/passwd
     
+netstat:
+    netstat -a
+    netstat -at
+    netstat -au
+    netstat -atn
+    netstat -aun
+    netstat -tln//不要加-a,否则会列出所有连接，而不仅仅是监听端口
+    netstat -uln//不要加-a,否则会列出所有连接，而不仅仅是监听端口
+    sudo netstat -nlpt//-p，查看对应的进程名和进程号
+    netstat -ltep//-ep可以同时查看进程名和用户名
+    netstat -s//统计网络数据，包括某个协议下的收发包数量
+    netstat -st
+    netstat -su
+    netstat -r
+    netstat -rn
+    netstat -i//打印网络接口
+    netstat -ie
+    netstat -tc//持续输出
+    netstat -g//输出IPV4和IPV6的多播组信息
+    
+    
+    
+    
+    
     
     
