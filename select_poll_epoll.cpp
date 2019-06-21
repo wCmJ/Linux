@@ -30,9 +30,15 @@ epoll_event epoll_events[1024];
 int n = epoll_wait(epollfd, epoll_events, 1024, 1000);
 
 
-
-
-
-
+ET模式下：
+client： nc -v localhost portnum
+server:50000 -> client:58382
+client端数据发送完成后，ctrl+c，client->server方向进入FIN_WAIT2，server->client方向进入CLOSE_WAIT。
+挥手流程（推测）:   client  send FIN            -> FIN_WAIT1
+                  server  recv FIN send ACK     ->CLOSE_WAIT
+                  client  recv ACK              ->FIN_WAIT2
+一段时间后，处于FIN_WAIT2状态的连接超时，退出。
+            处于CLOSE_WAIT状态的连接仍然存在。
+此时，重新使用58382端口连接50000端口，连接成功，均处于ESTABLISHED状态。
 
 
