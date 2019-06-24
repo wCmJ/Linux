@@ -131,6 +131,23 @@ netstat:
     netstat -tc//持续输出
     netstat -g//输出IPV4和IPV6的多播组信息
     
+lsof:
+    lsof可以替代netstat和ps的全部工作。
+    lsof默认行为是对结果进行或运算，例如-i拉出一个端口列表和-p拉出一个进程列表，默认情况下会获得两者的结果。
+    默认：没有选项，lsof列出活跃进程的所有打开文件
+    -a:结果进行与运算（而不是或）
+    -l:显示用户ID而不是用户名
+    -h:获得帮助
+    -t:仅获取进程ID
+    -U:获取UNIX套接口地址
+    -F:格式化输出结果，用于其他命令
+    lsof -i //显示所有连接
+    lsof -i 6//获取ipv6流量
+    lsof -iTCP
+    lsof -i:22//显示与指定端口相关的网络信息
+    sudo lsof -i :22
+    sudo lsof -i@127.0.0.1
+    
     
     
     
