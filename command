@@ -150,7 +150,108 @@ lsof:
     
     
     
-    
+netstat:
+	-打印网络链接，路由表，链接的数据统计，伪装链接以及广播域成员。
+	用于列出系统上所有的网络套接字连接情况，包括tcp,udp以及unix套接字，还能列出处于监听状态的套接字
+	查找网络连接情况和系统开启的端口号
+	-a:all
+	-e:user/inode
+	-g:组播信息
+	-i:interface
+	-l:listen
+	-n:no dns
+	-p:process(pid/pname)
+	-r:route
+	-s:statictis
+	-t:tcp
+	-u:udp
+
+
+
+
+
+
+
+tcpdump:
+	tcpdump通过libpcap库来抓取网络报，显示通过网络传输到本系统的TCP/IP以及其他网络的数据包
+	in:从网卡/数据包文件
+	out:文件
+
+centos/rhel:
+	sudo yum install tcpdump*
+fedora:
+	dnf install tcpdump
+ubuntu/debian/linux mint:
+	sudo apt-get install tcpdump
+
+	sudo tcpdump -i any  						所有网卡中捕获数据包
+	sudo tcpdump -i eth0						指定网卡中捕获数据包
+	sudo tcpdump -i eth1 -w packets_file 		将捕获的包写入文件
+	sudo tcpdump -r packets_file				从文件中读取内容
+	sudo tcpdump -ttttnnvvS						获取更多的包信息同时以可读的形式显示时间戳
+	//sudo tcpdump net 
+	sudo tcpdump host 10.230.37.57				获取指定IP的数据包，不管是作为源还是目的地址
+	sudo tcpdump src 10.230.37.57				指定IP地址是源地址
+	sudo tcpdump dst 10.230.37.57				指定IP地址是目的地址
+	sudo tcpdump tcp 							查看某个协议的数据包
+	sudo tcpdump port 22						查看某个端口或一个范围的数据包
+	sudo tcpdump portrange 22-125
+	sudo tcpdump src port 22
+	sudo tcpdump dst port 22
+	sudo tcpdump -D 							查看可以抓包的网络接口
+	sudo tcpdump -i any -c 5 					限制抓包数量
+	sudo tcpdump -i any -c 5 -nn 				-nn显示端口号
+
+
+	S SYN 	
+	F FIN
+	P PUSH
+	R RST
+	. ACK
+
+
+	还可以使用与(and, &&)、 或(or, ||)、 非(not, !)来组合两个条件
+
+
+lsof:
+	默认对结果进行或运算。
+	-a:与
+	-l:显示用户ID而不是用户名
+	-h:获得帮助
+	-t:仅获取进程ID
+	-U:获取UNIX套接口地址
+	-F:格式化输出结果，	
+
+	sudo lsof -i 					显示所有连接
+	sudo lsof -i 6 					获取IPv6流量
+	sudo lsof -iTCP 				显示TCP连接
+	sudo lsof -i :22 				显示与指定端口相关的网络信息
+	sudo lsof -i@172.16.12.5		显示制定主机的连接
+	sudo lsof -i@172.16.12.5:22 	显示指定主机与端口
+	sudo lsof -i -sTCP:LISTEN  
+	sudo lsof -i -sTCP:ESTABLISHED
+	sudo lsof -u lyou
+	sudo lsof -u ^lyou
+	sudo lsof -t -u lyou 					显示用户下的PID
+	-t选项只返回PID
+	kill -9 `sudo lsof -t -u lyou`
+	sudo lsof -c 进程名
+	sudo lsof -p pid
+	sudo lsof /home/lyou
+
+ 
+dll and lib:
+	dll:
+		1.copy dll file to project location
+		2.LoadLibrary();
+		3.GetProcAddress();
+		4.FreeLibrary();
+
+	lib:
+		1.copy .h file and .lib file to project location
+		2.add path and file to project setting
+		3.use function declation in .h file
+   
     
     
     
