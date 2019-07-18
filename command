@@ -252,6 +252,32 @@ dll and lib:
 		2.add path and file to project setting
 		3.use function declation in .h file
    
-    
+wireshark:
+	ip.addr == 10.250.54.139
+	ip.src == 10.250.54.139
+	ip.dst == 10.250.54.139
+	udp.port ==3230
+	udp.srcport==3230
+	udp.dstport==3230
+	tcp.port==5060
+	tcp.srcport==5060
+	tcp.dstport==5060
+	sip
+	h225||h245
+	rtp
+	(rpt&&ip.src==172.21.98.192)||(rtcp&&ip.src==172.21.98.192)
+	ip.src==10.250.54.139&&udp.port==3232
+	
+	statistics->I/O graph
+	statistics->flow graph
+	
+
+
+	
+	
+	
+	
+	
+	
     
     
