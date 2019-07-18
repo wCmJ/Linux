@@ -131,7 +131,12 @@ netstat:
     netstat -tc//持续输出
     netstat -g//输出IPV4和IPV6的多播组信息
     
+
+ps aux
+	USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
 lsof:
+	COMMAND     PID            USER   FD   TYPE    DEVICE SIZE/OFF NODE NAME
+	
     lsof可以替代netstat和ps的全部工作。
     lsof默认行为是对结果进行或运算，例如-i拉出一个端口列表和-p拉出一个进程列表，默认情况下会获得两者的结果。
     默认：没有选项，lsof列出活跃进程的所有打开文件
