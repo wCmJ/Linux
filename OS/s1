@@ -1,0 +1,34 @@
+bootsect.s: load system to memory zero.
+setup.s: init GDT/IDT
+
+16-bit: cs << 4 + ip
+cr0 register:
+    lowest bit is 1: use protect mode(32-bit)
+32-bit: 
+    cs(32-bit): base this value to get addr(cs') in GDT(global describe table)
+    cs' + ip(32-bit)
+    interrupt:
+        int n: get func in IDT base n.
+        
+system module:
+    bootsect.s | setup.s | system
+    bios will invoker bootsect, bootsect will invoker setup, setup will invoker other modules.
+    
+    func(p1,p2,p3);
+    stack
+    p3
+    p2
+    p1
+    return addr
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
